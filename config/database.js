@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+require("../models/Subject");
+require("../models/Result");
 
 mongoose.Promise = global.Promise;
 

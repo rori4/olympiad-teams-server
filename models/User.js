@@ -24,6 +24,8 @@ let userSchema = new mongoose.Schema({
   educationTo: { type: Date },
   work: { type: String, default: "" },
   info: { type: String, default: "" },
+  subjects: [{type:  mongoose.Schema.Types.ObjectId, ref: "Subject"}],
+  results: [{type:  mongoose.Schema.Types.ObjectId, ref: "Result"}],
 });
 
 userSchema.method({
