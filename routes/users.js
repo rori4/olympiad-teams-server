@@ -2,6 +2,7 @@ const express = require("express");
 const authCheck = require("../config/auth-check");
 const router = new express.Router();
 const User = require("../models/User");
+const Result = require("../models/Result");
 
 router.get("/profile", async (req, res, next) => {
   try {
@@ -24,13 +25,14 @@ router.get("/profile", async (req, res, next) => {
 router.post("/result", async (req, res, next) => {
   try {
     let userId = req.body.userId;
-    let result = req.body.result;
-    debugger;
-    let user = await User.findOne({ _id: userId }).populate("results");
+    let result = await Result.create({user:userId, ...req.body.result});
+    let user = await User.findById(userId);
+    user.results.push(result);
+    user.save();
     return res.status(200).json({
       success: true,
-      message: "Successfully fetched user",
-      data: results
+      message: "Successfully added medal",
+      data: user
     });
   } catch (error) {
     console.log(error);

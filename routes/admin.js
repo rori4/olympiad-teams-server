@@ -8,6 +8,13 @@ router.post("/add-user", authCheck, async (req, res, next) => {
   try {
     if (req.user.roles.includes("Admin")) {
       let user = req.body;
+      if(user._id){
+        const updateUser = await User.findByIdAndUpdate(user._id, user);
+        return res.status(200).json({
+          success: true,
+          message: "Successfully updated user",
+        });
+      }
       const checkUser = await User.find({ email: user.email });
       if (checkUser.length > 0) {
         return done("E-mail already exists!");
@@ -38,6 +45,29 @@ router.post("/add-user", authCheck, async (req, res, next) => {
     return res.status(200).json({
       success: false,
       message: `Something went wrong :( ${error !== null ? error.message : ""}`
+    });
+  }
+});
+
+router.get("/user", authCheck, async (req, res, next) => {
+  try {
+    if (req.user.roles.includes("Admin")) {
+      let userId = req.query.id;
+      let user = await User.findOne({ _id: userId })
+        .populate("results")
+        .populate("subjects")
+        .exec();
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched user",
+        data: user
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      success: false,
+      message: "Something went wrong :("
     });
   }
 });

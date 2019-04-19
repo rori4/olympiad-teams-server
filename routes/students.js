@@ -10,11 +10,11 @@ router.get("/list", async (req, res, next) => {
     let query = {roles: "Student"};
     if (subjectName !== "all") {
       let subject = await Subject.findOne({
-        roles: "Student",
         name: { $regex: new RegExp(subjectName, "i") }
       });
       if (subject) {
         query = {
+          roles: "Student",
           subjects: mongoose.Types.ObjectId(subject._id)
         };
       } else {
@@ -31,6 +31,25 @@ router.get("/list", async (req, res, next) => {
       message: "Successfully fetched users",
       users
     });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(200).json({
+      success: false,
+      message: "Something went wrong :("
+    });
+  }
+});
+
+router.get("/search", async (req, res, next) => {
+  try {
+      const search = req.query.search;
+      let users = await User.find({roles: "Student", $text : { $search: search } }).populate("subjects");;
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched searched users",
+        users
+      });
   } catch (error) {
     console.log(error);
 

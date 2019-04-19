@@ -27,6 +27,7 @@ let userSchema = new mongoose.Schema({
   subjects: [{type:  mongoose.Schema.Types.ObjectId, ref: "Subject"}],
   results: [{type:  mongoose.Schema.Types.ObjectId, ref: "Result"}],
 });
+userSchema.index({ "$**": "text" });
 
 userSchema.method({
   authenticate: function(password) {
