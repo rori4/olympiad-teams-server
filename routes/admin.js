@@ -6,15 +6,16 @@ const encryption = require("../utilities/encryption");
 
 router.post("/add-user", authCheck, async (req, res, next) => {
   try {
+    let user = req.body;
     if (req.user.roles.includes("Admin")) {
-      let user = req.body;
-      if(user._id){
+      if (user._id) {
         const updateUser = await User.findByIdAndUpdate(user._id, user);
         return res.status(200).json({
           success: true,
-          message: "Successfully updated user",
+          message: "Successfully updated user"
         });
       }
+      delete user._id;
       const checkUser = await User.find({ email: user.email });
       if (checkUser.length > 0) {
         return done("E-mail already exists!");
@@ -40,6 +41,16 @@ router.post("/add-user", authCheck, async (req, res, next) => {
           message: "Something went wrong! The student was not created!"
         });
       }
+    } else if (req.user.id === user._id) {
+      if (user._id) {
+        delete user.roles;
+        delete user.subjects;
+        const updateUser = await User.findByIdAndUpdate(req.user.id, user);
+        return res.status(200).json({
+          success: true,
+          message: "Successfully updated user"
+        });
+      }
     }
   } catch (error) {
     return res.status(200).json({
@@ -51,9 +62,19 @@ router.post("/add-user", authCheck, async (req, res, next) => {
 
 router.get("/user", authCheck, async (req, res, next) => {
   try {
-    if (req.user.roles.includes("Admin")) {
-      let userId = req.query.id;
+    let userId = req.query.id;
+    if (req.user.roles.includes("Admin")) {  
       let user = await User.findOne({ _id: userId })
+        .populate("results")
+        .populate("subjects")
+        .exec();
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched user",
+        data: user
+      });
+    } else if (req.user.id === userId) {
+      let user = await User.findOne({ _id: req.user.id })
         .populate("results")
         .populate("subjects")
         .exec();

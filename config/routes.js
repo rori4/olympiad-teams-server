@@ -4,6 +4,7 @@ const adminRoutes = require("../routes/admin");
 const studentRoutes = require("../routes/students");
 const subjectsRoutes = require("../routes/subjects");
 const resultsRoutes = require("../routes/results");
+const statisticsRoutes = require("../routes/statistics");
 
 module.exports = app => {
   app.use("/auth", authRoutes);
@@ -12,4 +13,5 @@ module.exports = app => {
   app.use("/students", studentRoutes);
   app.use("/subjects", subjectsRoutes);
   app.use("/results", resultsRoutes);
+  app.use("/statistics", statisticsRoutes);
 };

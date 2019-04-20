@@ -7,7 +7,10 @@ const Result = require("../models/Result");
 router.get("/profile", async (req, res, next) => {
   try {
     let userId = req.query.id;
-    let user = await User.findOne({ _id: userId }).populate("results").populate("subjects").exec();
+    let user = await User.findOne({ _id: userId })
+      .populate("results")
+      .populate("subjects")
+      .exec();
     return res.status(200).json({
       success: true,
       message: "Successfully fetched user",
@@ -22,18 +25,20 @@ router.get("/profile", async (req, res, next) => {
   }
 });
 
-router.post("/result", async (req, res, next) => {
+router.post("/result", authCheck, async (req, res, next) => {
   try {
-    let userId = req.body.userId;
-    let result = await Result.create({user:userId, ...req.body.result});
-    let user = await User.findById(userId);
-    user.results.push(result);
-    user.save();
-    return res.status(200).json({
-      success: true,
-      message: "Successfully added medal",
-      data: user
-    });
+    if (req.user.roles.includes("Admin")) {
+      let userId = req.body.userId;
+      let result = await Result.create({ user: userId, ...req.body.result });
+      let user = await User.findById(userId);
+      user.results.push(result);
+      user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Successfully added medal",
+        data: user
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(200).json({
