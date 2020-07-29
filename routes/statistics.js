@@ -39,15 +39,15 @@ router.get("/studentsProgress", async (req, res, next) => {
     let allStudents = await User.count({ roles: "Student" });
     let studentsWithUniversity = await User.count({
       roles: "Student",
-      university: { $ne: "", $ne: null }
+      university: { $ne: "" }
     });
     let studentsWithWork = await User.count({
       roles: "Student",
-      work: { $ne: "", $ne: null }
+      work: { $ne: "" }
     });
     let studentsWithResults = await User.count({
       roles: "Student",
-      results: { $ne: [], $ne: null }
+      results: { $ne: []}
     });
     let percentageWithUni = percentage(studentsWithUniversity, allStudents);
     let percentageWithWork = percentage(studentsWithWork, allStudents);
